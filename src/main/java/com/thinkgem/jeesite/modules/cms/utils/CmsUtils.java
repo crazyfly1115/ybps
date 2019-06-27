@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.modules.cms.entity.*;
+import com.thinkgem.jeesite.modules.cms.filter.IpFilter;
 import com.thinkgem.jeesite.modules.cms.service.*;
 
 import javax.servlet.ServletContext;
@@ -34,9 +35,10 @@ public class CmsUtils {
 	private static ArticleService articleService = SpringContextHolder.getBean(ArticleService.class);
 	private static LinkService linkService = SpringContextHolder.getBean(LinkService.class);
     private static ServletContext context = SpringContextHolder.getBean(ServletContext.class);
-    private  static CmsBookService cmsBookService=SpringContextHolder.getBean(CmsBookService.class);
+    private static CmsBookService cmsBookService=SpringContextHolder.getBean(CmsBookService.class);
+    private static FiterIpService fiterIpService=SpringContextHolder.getBean(FiterIpService.class);
 
-	private static final String CMS_CACHE = "cmsCache";
+	public static final String CMS_CACHE = "cmsCache";
 	
 	/**
 	 * 获得站点列表
@@ -312,5 +314,16 @@ public class CmsUtils {
 		cmsBook.setDelFlag(Article.DEL_FLAG_NORMAL);
 		page = cmsBookService.findPage(page, cmsBook);
 		return page.getList();
+	}
+
+	//获取需要过滤ip的缓存
+	public  static List<FiterIp> getIpList(){
+		@SuppressWarnings("unchecked")
+		List<FiterIp> FiterIplist = (List<FiterIp>)CacheUtils.get(CMS_CACHE, "FiterIplist");
+		if (FiterIplist == null){
+			FiterIplist=fiterIpService.findList(new FiterIp());
+			CacheUtils.put(CMS_CACHE, "siteList", FiterIplist);
+		}
+		return FiterIplist;
 	}
 }

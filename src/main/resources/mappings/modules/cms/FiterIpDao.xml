@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cms.dao.FiterIpDao">
+    
+	<sql id="fiterIpColumns">
+		a.id AS "id",
+		a.start_ip AS "startIp",
+		a.end_ip AS "endIp",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="fiterIpJoins">
+	</sql>
+    
+	<select id="get" resultType="FiterIp">
+		SELECT 
+			<include refid="fiterIpColumns"/>
+		FROM tb_fiter_ip a
+		<include refid="fiterIpJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="FiterIp">
+		SELECT 
+			<include refid="fiterIpColumns"/>
+		FROM tb_fiter_ip a
+		<include refid="fiterIpJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="startIp != null and startIp != ''">
+				AND a.start_ip = #{startIp}
+			</if>
+			<if test="endIp != null and endIp != ''">
+				AND a.end_ip = #{endIp}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="FiterIp">
+		SELECT 
+			<include refid="fiterIpColumns"/>
+		FROM tb_fiter_ip a
+		<include refid="fiterIpJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tb_fiter_ip(
+			id,
+			start_ip,
+			end_ip,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{startIp},
+			#{endIp},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tb_fiter_ip SET 	
+			start_ip = #{startIp},
+			end_ip = #{endIp},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE tb_fiter_ip SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
